@@ -276,7 +276,7 @@ async function experimentInit() {
   text_9 = new visual.TextStim({
     win: psychoJS.window,
     name: 'text_9',
-    text: 'That is the end of the task!\n\nThank you for participating.\n\nThis window will automatically close...',
+    text: 'That is the end of the task!\n\nPlease wait while we save your results...',
     font: 'Arial',
     units: undefined, 
     pos: [0, 0], draggable: false, height: 0.02,  wrapWidth: undefined, ori: 0.0,
@@ -1454,9 +1454,41 @@ function end_taskRoutineBegin(snapshot) {
     end_taskClock.reset(); // clock
     frameN = -1;
     continueRoutine = true; // until we're told otherwise
-    routineTimer.add(5.000000);
     end_taskMaxDurationReached = false;
     // update component parameters for each repeat
+    // Run 'Begin Routine' code from code_3
+    // Disable downloading results to browser
+    psychoJS._saveResults = 0; 
+    
+    // Generate filename for results
+    let filename = psychoJS._experiment._experimentName + '_' + psychoJS._experiment._datetime + '.csv';
+    
+    // Extract data object from experiment
+    let dataObj = psychoJS._experiment._trialsData;
+    
+    // Convert data object to CSV
+    let data = [Object.keys(dataObj[0])].concat(dataObj).map(it => {
+        return Object.values(it).toString()
+    }).join('\n')
+    
+    // Send data to OSF via DataPipe
+    console.log('Saving data...');
+    fetch('https://pipe.jspsych.org/api/data', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Accept: '*/*',
+        },
+        body: JSON.stringify({
+            experimentID: 'lZL8eRbgprnI', // ⭑ UPDATE WITH YOUR DATAPIPE EXPERIMENT ID ⭑
+            filename: filename,
+            data: data,
+        }),
+    }).then(response => response.json()).then(data => {
+        // Log response and force experiment end
+        console.log(data);
+        quitPsychoJS();
+    })
     psychoJS.experiment.addData('end_task.started', globalClock.getTime());
     end_taskMaxDuration = null
     // keep track of which components have finished
@@ -1489,11 +1521,6 @@ function end_taskRoutineEachFrame() {
       text_9.setAutoDraw(true);
     }
     
-    frameRemains = 0.0 + 5 - psychoJS.window.monitorFramePeriod * 0.75;// most of one frame period left
-    if (text_9.status === PsychoJS.Status.STARTED && t >= frameRemains) {
-      text_9.setAutoDraw(false);
-    }
-    
     // check for quit (typically the Esc key)
     if (psychoJS.experiment.experimentEnded || psychoJS.eventManager.getKeys({keyList:['escape']}).length > 0) {
       return quitPsychoJS('The [Escape] key was pressed. Goodbye!', false);
@@ -1512,7 +1539,7 @@ function end_taskRoutineEachFrame() {
     });
     
     // refresh the screen if continuing
-    if (continueRoutine && routineTimer.getTime() > 0) {
+    if (continueRoutine) {
       return Scheduler.Event.FLIP_REPEAT;
     } else {
       return Scheduler.Event.NEXT;
@@ -1530,11 +1557,9 @@ function end_taskRoutineEnd(snapshot) {
       }
     });
     psychoJS.experiment.addData('end_task.stopped', globalClock.getTime());
-    if (end_taskMaxDurationReached) {
-        routineTimer.add(end_taskMaxDuration);
-    } else {
-        routineTimer.add(-5.000000);
-    }
+    // the Routine "end_task" was not non-slip safe, so reset the non-slip timer
+    routineTimer.reset();
+    
     // Routines running outside a loop should always advance the datafile row
     if (currentLoop === psychoJS.experiment) {
       psychoJS.experiment.nextEntry(snapshot);
