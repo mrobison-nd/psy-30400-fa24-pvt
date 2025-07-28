@@ -1454,7 +1454,6 @@ function end_taskRoutineBegin(snapshot) {
     continueRoutine = true; // until we're told otherwise
     end_taskMaxDurationReached = false;
     // update component parameters for each repeat
-    // Run 'Begin Routine' code from code_3
     // Disable downloading results to browser
     psychoJS._saveResults = 0; 
     
