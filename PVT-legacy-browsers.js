@@ -7,8 +7,7 @@
 let expName = 'PVT';  // from the Builder filename that created this script
 let expInfo = {
     'participant': `${util.pad(Number.parseFloat(util.randint(0, 999999)).toFixed(0), 6)}`,
-    'first name': '',
-    'last name': '',
+    'name': '',
 };
 
 // Start code blocks for 'Before Experiment'
@@ -1456,8 +1455,38 @@ function end_taskRoutineBegin(snapshot) {
     continueRoutine = true; // until we're told otherwise
     end_taskMaxDurationReached = false;
     // update component parameters for each repeat
-    // Run 'Begin Routine' code from code_3
-    /* Syntax Error: Fix Python code */
+    // Disable downloading results to browser
+    psychoJS._saveResults = 0; 
+    
+    // Generate filename for results
+    let filename = psychoJS._experiment._experimentName + '_' + psychoJS._experiment._datetime + '.csv';
+    
+    // Extract data object from experiment
+    let dataObj = psychoJS._experiment._trialsData;
+    
+    // Convert data object to CSV
+    let data = [Object.keys(dataObj[0])].concat(dataObj).map(it => {
+        return Object.values(it).toString()
+    }).join('\n')
+    
+    // Send data to OSF via DataPipe
+    console.log('Saving data...');
+    fetch('https://pipe.jspsych.org/api/data', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Accept: '*/*',
+        },
+        body: JSON.stringify({
+            experimentID: 'lZL8eRbgprnI', // ⭑ UPDATE WITH YOUR DATAPIPE EXPERIMENT ID ⭑
+            filename: filename,
+            data: data,
+        }),
+    }).then(response => response.json()).then(data => {
+        // Log response and force experiment end
+        console.log(data);
+        quitPsychoJS();
+    })
     psychoJS.experiment.addData('end_task.started', globalClock.getTime());
     end_taskMaxDuration = null
     // keep track of which components have finished
