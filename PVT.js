@@ -143,7 +143,6 @@ var blankClock;
 var text_4;
 var waitClock;
 var text_2;
-var key_resp_6;
 var trialClock;
 var timer;
 var text;
@@ -179,7 +178,7 @@ async function experimentInit() {
   text_6 = new visual.TextStim({
     win: psychoJS.window,
     name: 'text_6',
-    text: 'On each trial, you will see a cross in the middle of the screen.\n\nAfter a random time period, the cross will turn into an X. \n\nYour task is to press the spacebar as quickly as you can when this happens.\n\nAfter you press the spacebar, your reaction time will be shown. For example, if the timer says 0.500, you responded in 500 milliseconds, or half a second.\n\nPress SPACE to continue.',
+    text: 'On each trial, you will see a set of zeros in the middle of the screen, which look like a timer.\n\nAfter a random time period, the timer will turn on, like a stopwatch.\n\nYour task is to press the spacebar as quickly as you can when this happens.\n\nAfter you press the spacebar, your reaction time will be shown. For example, if the timer says 0.500, you responded in 500 milliseconds, or half a second.\n\nPress SPACE to continue.',
     font: 'Arial',
     units: undefined, 
     pos: [0, 0], draggable: false, height: 0.02,  wrapWidth: undefined, ori: 0.0,
@@ -233,8 +232,6 @@ async function experimentInit() {
     color: new util.Color('blue'),  opacity: undefined,
     depth: 0.0 
   });
-  
-  key_resp_6 = new core.Keyboard({psychoJS: psychoJS, clock: new util.Clock(), waitForStart: true});
   
   // Initialize components for Routine "trial"
   trialClock = new util.Clock();
@@ -962,7 +959,6 @@ function trialsLoopEndIteration(scheduler, snapshot) {
 
 
 var waitMaxDurationReached;
-var _key_resp_6_allKeys;
 var waitMaxDuration;
 var waitComponents;
 function waitRoutineBegin(snapshot) {
@@ -976,15 +972,11 @@ function waitRoutineBegin(snapshot) {
     continueRoutine = true; // until we're told otherwise
     waitMaxDurationReached = false;
     // update component parameters for each repeat
-    key_resp_6.keys = undefined;
-    key_resp_6.rt = undefined;
-    _key_resp_6_allKeys = [];
     psychoJS.experiment.addData('wait.started', globalClock.getTime());
     waitMaxDuration = null
     // keep track of which components have finished
     waitComponents = [];
     waitComponents.push(text_2);
-    waitComponents.push(key_resp_6);
     
     for (const thisComponent of waitComponents)
       if ('status' in thisComponent)
@@ -1014,36 +1006,6 @@ function waitRoutineEachFrame() {
     frameRemains = 0.0 + waitTime - psychoJS.window.monitorFramePeriod * 0.75;// most of one frame period left
     if (text_2.status === PsychoJS.Status.STARTED && t >= frameRemains) {
       text_2.setAutoDraw(false);
-    }
-    
-    
-    // *key_resp_6* updates
-    if (t >= 0.0 && key_resp_6.status === PsychoJS.Status.NOT_STARTED) {
-      // keep track of start time/frame for later
-      key_resp_6.tStart = t;  // (not accounting for frame time here)
-      key_resp_6.frameNStart = frameN;  // exact frame index
-      
-      // keyboard checking is just starting
-      psychoJS.window.callOnFlip(function() { key_resp_6.clock.reset(); });  // t=0 on next screen flip
-      psychoJS.window.callOnFlip(function() { key_resp_6.start(); }); // start on screen flip
-      psychoJS.window.callOnFlip(function() { key_resp_6.clearEvents(); });
-    }
-    
-    frameRemains = 0.0 + waitTime - psychoJS.window.monitorFramePeriod * 0.75;// most of one frame period left
-    if (key_resp_6.status === PsychoJS.Status.STARTED && t >= frameRemains) {
-      key_resp_6.status = PsychoJS.Status.FINISHED;
-        }
-      
-    if (key_resp_6.status === PsychoJS.Status.STARTED) {
-      let theseKeys = key_resp_6.getKeys({keyList: ['space'], waitRelease: false});
-      _key_resp_6_allKeys = _key_resp_6_allKeys.concat(theseKeys);
-      if (_key_resp_6_allKeys.length > 0) {
-        key_resp_6.keys = _key_resp_6_allKeys[_key_resp_6_allKeys.length - 1].name;  // just the last key pressed
-        key_resp_6.rt = _key_resp_6_allKeys[_key_resp_6_allKeys.length - 1].rt;
-        key_resp_6.duration = _key_resp_6_allKeys[_key_resp_6_allKeys.length - 1].duration;
-        // a response ends the routine
-        continueRoutine = false;
-      }
     }
     
     // check for quit (typically the Esc key)
@@ -1082,18 +1044,6 @@ function waitRoutineEnd(snapshot) {
       }
     }
     psychoJS.experiment.addData('wait.stopped', globalClock.getTime());
-    // update the trial handler
-    if (currentLoop instanceof MultiStairHandler) {
-      currentLoop.addResponse(key_resp_6.corr, level);
-    }
-    psychoJS.experiment.addData('key_resp_6.keys', key_resp_6.keys);
-    if (typeof key_resp_6.keys !== 'undefined') {  // we had a response
-        psychoJS.experiment.addData('key_resp_6.rt', key_resp_6.rt);
-        psychoJS.experiment.addData('key_resp_6.duration', key_resp_6.duration);
-        routineTimer.reset();
-        }
-    
-    key_resp_6.stop();
     // the Routine "wait" was not non-slip safe, so reset the non-slip timer
     routineTimer.reset();
     
